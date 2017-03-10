@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">漫吧</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_test">test</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="main_viewPagerTitle_one">漫 架</string>
+    <string name="main_viewPagerTitle_two">漫 城</string>
+    <string name="main_viewPagerTitle_three">发 现</string>
+    <string name="main_viewPagerTitle_four">我 的</string>
+    <string name="moreText">更多</string>
+    <string name="updateTo">更新至</string>
+    <string name="addToBookCase">加入书架</string>
+    <string name="startRead">开始阅读</string>
+</resources>

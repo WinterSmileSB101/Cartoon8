@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:id="@+id/tuijian_content">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+        <LinearLayout
+            android:id="@+id/rank_recyclerContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@color/colorSliteGray">
+            <com.youth.banner.Banner
+                android:id="@+id/tuijian_fragment_banner"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"></com.youth.banner.Banner>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

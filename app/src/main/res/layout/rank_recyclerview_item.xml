@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="170dp"
+              android:layout_height="240dp"
+    android:orientation="vertical"
+              android:layout_marginLeft="5dp"
+    android:background="@color/colorGray"
+    android:layout_marginBottom="10dp">
+    <!-- 图片高度+70dp为整体高度-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/colorWrite"
+        android:layout_margin="0.5dp">
+        <ImageView
+            android:id="@+id/rank_recycle_imageView"
+            android:layout_width="match_parent"
+            android:layout_height="170dp"
+            android:layout_gravity="center_vertical"
+            android:scaleType="fitXY"
+            android:transitionName="comicImage"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical"
+            android:layout_marginTop="5dp">
+            <TextView
+                android:id="@+id/item_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:gravity="center_vertical"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorBlack"/>
+            <!-- <LinearLayout
+                 android:layout_width="match_parent"
+                 android:layout_height="20dp"
+                 android:layout_marginLeft="5dp"
+                 android:layout_marginRight="5dp"
+                 android:orientation="horizontal"
+                 android:gravity="center">
+                 <TextView
+                     android:layout_width="wrap_content"
+                     android:layout_height="match_parent"
+                     android:gravity="center"
+                     android:text="@string/updateTo"
+                     android:textColor="@color/colorDarkSlateGray"/>
+                     -->
+            <TextView
+                android:id="@+id/item_nowHua"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:textColor="@color/colorDimGray"
+                android:layout_marginBottom="5dp"
+                android:textSize="12sp"/>
+            <!-- </LinearLayout> -->
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+</LinearLayout>
