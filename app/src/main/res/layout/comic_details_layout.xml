@@ -1,23 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                 android:id="@+id/comic_details_mainContent"
                                                  android:orientation="vertical"
                                                  android:layout_width="match_parent"
                                                  android:layout_height="match_parent"
-                                                 android:fitsSystemWindows="true">
+                                                 android:fitsSystemWindows="true"
+                                                 android:background="@color/colorSliteGray">
     
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/comic_details_appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="350dp"
+        android:layout_height="370dp"
         android:fitsSystemWindows="true">
         <android.support.design.widget.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:expandedTitleMarginEnd="64dp"
-            app:expandedTitleMarginBottom="15dp"
+            app:collapsedTitleGravity="center_vertical"
+            app:expandedTitleGravity="center"
             app:contentScrim="?attr/colorPrimary"
-            app:expandedTitleMarginStart="48dp"
-            android:fitsSystemWindows="true">
+            android:fitsSystemWindows="true"
+            app:expandedTitleTextAppearance="@style/transparentText">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -28,7 +31,9 @@
                     android:id="@+id/top_imageContent"
                     android:layout_width="match_parent"
                     android:layout_height="221dp"
-                    android:fitsSystemWindows="true">
+                    android:fitsSystemWindows="true"
+                    app:layout_collapseMode="parallax"
+                    app:layout_collapseParallaxMultiplier="0.7">
                     <ImageView
                         android:id="@+id/comic_details_toolbarBG"
                         android:layout_width="match_parent"
@@ -81,7 +86,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="51dp"
                     android:orientation="horizontal"
-                    android:layout_marginTop="10dp">
+                    android:layout_marginTop="5dp">
                     <RelativeLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
@@ -119,25 +124,35 @@
                 android:id="@+id/comic_details_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                app:layout_scrollFlags="scroll|enterAlways"
-                android:background="#00FFFFFF"></android.support.v7.widget.Toolbar>
+                app:layout_collapseMode="pin"></android.support.v7.widget.Toolbar>
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
+        android:id="@+id/bottom_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:background="@color/colorSliteGray">
+        android:background="@color/colorSliteGray"
+        android:visibility="invisible">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
             <TextView
+                android:id="@+id/comic_details_updateRound"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"/>
+            <TextView
                 android:id="@+id/comic_details_comicIntroduce"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"/>
+                android:gravity="center"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -162,8 +177,66 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/comic_details_recyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
             </android.support.v7.widget.RecyclerView>
+<!--收起展开面板-->
+            <RelativeLayout
+                android:id="@+id/comic_details_showAllRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="40dp">
+                <ImageView
+                    android:id="@+id/left"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@mipmap/down_arrow_13"
+                    android:layout_centerInParent="true"
+                    android:layout_toLeftOf="@+id/right"/>
+                <TextView
+                    android:id="@+id/right"
+                    android:layout_centerInParent="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/seeAll"
+                    android:layout_marginLeft="2dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/colorGray"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_alignParentBottom="true"></LinearLayout>
+            </RelativeLayout>
+<!--评论-->
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorWrite">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/newsPreview"
+                        android:textColor="@color/colorPeaGreen"
+                        android:gravity="center_vertical"
+                        android:layout_marginLeft="10dp"/>
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/preview_RecyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"></android.support.v7.widget.RecyclerView>
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>

@@ -1,5 +1,6 @@
 package ComicData;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -12,7 +13,7 @@ import java.util.ArrayList;
  * 修改备注：
  */
 
-public class Comic{
+public final class Comic implements Serializable{
 	/**
 	 * 漫画名称
 	 */
@@ -43,6 +44,10 @@ public class Comic{
 	 * 开始更新时间
 	 */
 	private String startUpdateTime;
+	/**
+	 * 更新周期
+	 */
+	private String updateRound;
 	/**
 	 * 最新章节
 	 */
@@ -201,5 +206,13 @@ public class Comic{
 
 	public void setComic_Status(String comic_Status){
 		this.comic_Status = comic_Status;
+	}
+
+	public String getUpdateRound(){
+		return updateRound;
+	}
+
+	public void setUpdateRound(String updateRound){
+		this.updateRound = updateRound;
 	}
 }

@@ -19,4 +19,6 @@
     <color name="colorOrangeRed">#FF4500</color>
     <color name="colorLightGreen">#90EE90</color>
     <color name="colorPeaGreen">#9ED048</color>
+
+    <color name="black_overlay">#66000000</color>
 </resources>

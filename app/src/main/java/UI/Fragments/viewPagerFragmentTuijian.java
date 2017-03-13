@@ -28,7 +28,6 @@ import RetailsWorm.HtmlAnalysisUtils;
 import RetailsWorm.NetWorkUtils;
 import UI.Adapter.Tuijian_recyclerViewAdapter;
 import UI.LayoutManager.CustomStraggerLayoutManager;
-import winter.zxb.smilesb101.cartoon8.MainActivity;
 import winter.zxb.smilesb101.cartoon8.R;
 
 import static ComicData.comicStaticValue.CLASS_LINK;
@@ -50,24 +49,24 @@ import static ComicData.comicStaticValue.RankList_patternNames;
  * 修改备注：
  */
 
-public class viewPagerFragmentTuijian extends Fragment{
+public final class viewPagerFragmentTuijian extends Fragment{
 
 	private View rootView;
-	private static Context context;
-	private static Fragment fragment;
+	private Context context;
+	private Fragment fragment;
 
 	private Banner banner;
-	private static LinearLayout recyclerViewContent;
-	private static ArrayList<RecyclerView> recyclerViews;
-	private static ArrayList<Tuijian_recyclerViewAdapter> arrayList;
+	private LinearLayout recyclerViewContent;
+	private ArrayList<RecyclerView> recyclerViews;
+	private ArrayList<Tuijian_recyclerViewAdapter> arrayList;
 
 
 	private static final String TAG = "FragmentTuijian";
 
-	private static ComicClass comicClass = new ComicClass();
-	private static ArrayList<ComicRankList> comicRankLists;
+	private ComicClass comicClass = new ComicClass();
+	private ArrayList<ComicRankList> comicRankLists;
 
-	static Handler handler = new Handler(){
+	Handler handler = new Handler(){
 		@Override
 		public void handleMessage(Message msg){
 			switch(msg.what) {
@@ -90,7 +89,7 @@ public class viewPagerFragmentTuijian extends Fragment{
 		}
 	};
 
-	static void InitLayoutValue(String html)
+	void InitLayoutValue(String html)
 	{
 		Log.i(TAG,"InitLayoutValue: "+"更新前");
 		new AsyncTask<String,Void,Void>(){
@@ -100,8 +99,9 @@ public class viewPagerFragmentTuijian extends Fragment{
 				/*comicClass.setClass_name(HtmlAnalysisUtils.getPageClass(params[0],CLASS_NAME,"title"));
 				comicClass.setClass_link(HtmlAnalysisUtils.getPageClass(params[0],CLASS_LINK,"href"));*/
 				comicRankLists = new ArrayList<>();
+				ComicRankList comicRankList = null;
 				for(String s:RankList_patternNames) {
-					ComicRankList comicRankList = new ComicRankList();
+					comicRankList = new ComicRankList();
 					comicRankList.setRank_comic_link(HtmlAnalysisUtils.getRankList(params[0],s + RankList_TailString_COMIC_LINK,"href"));
 					comicRankList.setRank_comic_pic(HtmlAnalysisUtils.getRankList(params[0],s +RankList_TailString_COMIC_PIC,"data-src"));
 					comicRankList.setRank_comic_lasestName(HtmlAnalysisUtils.getRankList(params[0],s+RankList_TailString_COMIC_LASESTNAME,HtmlAnalysisUtils.WHAT_innerHTML));
@@ -119,9 +119,10 @@ public class viewPagerFragmentTuijian extends Fragment{
 				//动态生成Recycler
 				recyclerViews = new ArrayList<RecyclerView>();
 				arrayList = new ArrayList<Tuijian_recyclerViewAdapter>();
+				View view = null;
 				for(ComicRankList rankList : comicRankLists)
 				{
-					View view = LayoutInflater.from(context)
+					view = LayoutInflater.from(context)
 							.inflate(R.layout.rank_recyclerview_layout,recyclerViewContent,false);
 					DaynamicInitRecyclerView(view,rankList);//动态更新
 					recyclerViewContent.addView(view);
@@ -154,10 +155,10 @@ public class viewPagerFragmentTuijian extends Fragment{
 
 	void InitValue()
 	{
-		NetWorkUtils.getHtmlPage(context,"http://m.dangniao.com/",handler);
+		NetWorkUtils.getHtmlPage(this.getActivity(),"http://m.dangniao.com/",handler);
 	}
 
-	static void DaynamicInitRecyclerView(View view,ComicRankList comicRank)
+	void DaynamicInitRecyclerView(View view,ComicRankList comicRank)
 	{
 		RecyclerView r = (RecyclerView)view.findViewById(R.id.rank_recyclerView);
 		Tuijian_recyclerViewAdapter a = new Tuijian_recyclerViewAdapter(comicRank,context,fragment);

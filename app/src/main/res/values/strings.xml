@@ -15,4 +15,23 @@
     <string name="updateTo">更新至</string>
     <string name="addToBookCase">加入书架</string>
     <string name="startRead">开始阅读</string>
+    <string name="allChose">全选</string>
+    <string name="sureDownLoadBtn">确认下载</string>
+    <string name="seeAll">查看全部</string>
+    <string name="shouqi">收起</string>
+    <string name="newsPreview">最新评论</string>
+
+    <string name="title_activity_watch_comic">WatchComicActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="preHUA">上一话</string>
+    <string name="nextHUA">下一话</string>
+    <string name="menu">菜单</string>
+    <string name="battery">电量：</string>
+    <string name="index">目录</string>
+    <string name="download">下载</string>
+    <string name="light">亮度</string>
+    <string name="landscape">横屏</string>
+    <string name="protrait">竖屏</string>
+    <string name="options">设置</string>
 </resources>

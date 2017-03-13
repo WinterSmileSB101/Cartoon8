@@ -20,7 +20,6 @@ import java.util.ArrayList;
 
 import ComicData.ComicRankList;
 import UI.Fragments.comicDetailsFragment;
-import winter.zxb.smilesb101.cartoon8.MainActivity;
 import winter.zxb.smilesb101.cartoon8.R;
 import winter.zxb.smilesb101.cartoon8.comicDetailsActivity;
 

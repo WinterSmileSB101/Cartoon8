@@ -1,5 +1,6 @@
 package ComicData;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -12,7 +13,7 @@ import java.util.ArrayList;
  * 修改备注：
  */
 
-public class ComicClass{
+public final class ComicClass implements Serializable{
 	/**
 	 * 分类名称
 	 */
