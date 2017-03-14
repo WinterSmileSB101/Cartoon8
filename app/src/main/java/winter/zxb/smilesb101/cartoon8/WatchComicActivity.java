@@ -32,6 +32,7 @@ import android.widget.Button;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,8 +67,7 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 	private static final int AUTO_HIDE_DELAY_MILLIS = 1000;
 
 	/**
-	 * Some older devices needs a small delay between UI widget updates
-	 * and a change of the status and navigation bar.
+	 * 动画时间
 	 */
 	private static final int UI_ANIMATION_DELAY = 200;
 	private final Handler mHideHandler = new Handler();
@@ -85,6 +85,9 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 			}
 		}
 	};
+	/**
+	 * 显示或者隐藏状态
+	 */
 	private boolean mVisible;
 	Handler handler = new Handler(){
 		@Override
@@ -144,16 +147,13 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 		public void onScrolled(RecyclerView recyclerView,int dx,int dy){
 			super.onScrolled(recyclerView,dx,dy);
 			LinearLayoutManager l = (LinearLayoutManager)recyclerView.getLayoutManager();
-			//l.findFirstCompletelyVisibleItemPosition();
-			//Log.i(TAG,"onScrolled: "+l.findFirstVisibleItemPosition());
-			if((adapterNowPos-1)!=l.findFirstVisibleItemPosition()) {
-				//不等于的时候才是有效改变
-				adapterNowPos = l.findFirstVisibleItemPosition();
-				allItems = l.getItemCount();
-				//设置seekbar
-				seekBar.setMax(allItems);
-				seekBar.setProgress(adapterNowPos);
-			}
+			adapterNowPos = l.findFirstVisibleItemPosition();
+			allItems = l.getItemCount();
+			//设置seekbar
+			seekBar.setMax(allItems-1);
+			Log.i(TAG,"onScrolled: "+allItems);
+			seekBar.setProgress(adapterNowPos);
+			setpicText();//设置文字
 		}
 	};
 	private static final String TAG = "WatchComicActivity";
@@ -177,6 +177,9 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 	private TextView comic_name_bottom,comic_pic_state,time,battery;
 	private SeekBar seekBar;
 	private LinearLayout small_status;
+	private RelativeLayout bottom_seekBar_help;
+
+	private TextView seekBar_help_now,seekBar_help_num;
 
 	private Button backbtn;
 	private TextView comic_name_top,pic_state_top;
@@ -206,6 +209,9 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 		feedbackBtn = (Button)findViewById(R.id.feed_backBtn);
 		downLoadPicBtn = (Button)findViewById(R.id.downloadpic_Btn);
 		sharePicBtn = (Button)findViewById(R.id.sharePicBtn);
+		bottom_seekBar_help = (RelativeLayout)findViewById(R.id.bottom_seekBar_help);
+		seekBar_help_now = (TextView)findViewById(R.id.seekBar_help_now);
+		seekBar_help_num = (TextView)findViewById(R.id.seekBar_help_num);
 
 		menu_content.setOnClickListener(this);
 		showCtrlbtn.setOnClickListener(this);
@@ -280,17 +286,10 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 				case MotionEvent.ACTION_MOVE:
 					Ey = event.getY();
 					float res = (Ey-Sy);
-					if(Math.abs(res) > 10)
-					{
-						//Log.i(TAG,"onTouch: 分发事件给recyclerView 移动距离为 "+res);
-						//让RecyclerView开始滑动
-						mContentView.scrollBy(mContentView.getScrollX(),mContentView.getScrollY()-(int)res);
-						Sy = event.getY();//更新开始位置
-					}
-					break;
-				case MotionEvent.ACTION_UP:
-					Ey = event.getY();
-					//Log.i(TAG,"onTouch: 抬起事件 "+Ey);
+					//Log.i(TAG,"onTouch: 分发事件给recyclerView 移动距离为 "+res);
+					//让RecyclerView开始滑动
+					mContentView.scrollBy(mContentView.getScrollX(),mContentView.getScrollY()-(int)res);
+					Sy = event.getY();//更新开始位置
 					break;
 			}
 			return false;
@@ -303,28 +302,41 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 	SeekBar.OnSeekBarChangeListener seekChangerListener = new SeekBar.OnSeekBarChangeListener(){
 		@Override
 		public void onProgressChanged(SeekBar seekBar,int progress,boolean fromUser){
-			Log.i(TAG,"onProgressChanged: 选择了，第"+progress);
-			//设置图片状态（1/9）;
-			if(progress!=0) {
-				adapterNowPos = progress;
-				String s = adapterNowPos + "/" + allItems;
-				comic_pic_state.setText(s);//设置图片的数量
-				pic_state_top.setText(s);
-				scroolRV_To(adapterNowPos);
+			//更新辅助面板
+			if(bottom_seekBar_help.getVisibility()==View.VISIBLE) {
+				seekBar_help_now.setText(progress + 1+"");
 			}
 		}
 
 		@Override
 		public void onStartTrackingTouch(SeekBar seekBar){
-
+            //显示辅助面板
+			bottom_seekBar_help.setVisibility(View.VISIBLE);
+			seekBar_help_num.setText(seekBar.getMax()+1+"");//设置总数
 		}
 
 		@Override
 		public void onStopTrackingTouch(SeekBar seekBar){
-
+			//关闭辅助面板
+			bottom_seekBar_help.setVisibility(View.GONE);
+			int progress = seekBar.getProgress();
+			Log.i(TAG,"onProgressChanged: 选择了，第"+progress);
+			//设置图片状态（1/9）;
+			adapterNowPos = progress;
+			setpicText();
+			mContentView.scrollToPosition(adapterNowPos);//不能平稳滑动，否者联动出错
 		}
 	};
 
+	/**
+	 * 设置图片文字（第几张/总共几张）
+	 */
+	void setpicText()
+	{
+		String s = adapterNowPos+1+ "/" + allItems;
+		comic_pic_state.setText(s);//设置图片的数量
+		pic_state_top.setText(s);
+	}
 	/**
 	 * 展示上下栏
 	 */
@@ -373,7 +385,7 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 	}
 
 	/**
-	 * 触发器
+	 * 触发器用来控制显示与隐藏
 	 */
 	void toogle()
 	{
@@ -443,6 +455,10 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 		}
 	}
 
+	/**
+	 * 滚动到位置
+	 * @param pos
+	 */
 	void scroolRV_To(int pos)
 	{
 		if(adapterNowPos>=allItems)
@@ -450,9 +466,9 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 			adapterNowPos = allItems;
 			Toast.makeText(this,"已经到顶啦！",Toast.LENGTH_SHORT);
 		}
-		else if(adapterNowPos<=1)
+		else if(adapterNowPos <= 0)
 		{
-			adapterNowPos = 1;
+			adapterNowPos = 0;
 			Toast.makeText(this,"已经到底啦！",Toast.LENGTH_SHORT);
 		}
 		mContentView.smoothScrollToPosition(adapterNowPos);

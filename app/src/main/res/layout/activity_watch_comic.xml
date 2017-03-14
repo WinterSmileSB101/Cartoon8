@@ -149,8 +149,7 @@
         android:layout_height="50dp"
         android:orientation="horizontal"
         android:background="#80000000"
-        android:visibility="gone"
-        android:translationZ="99dp">
+        android:visibility="gone">
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -220,6 +219,45 @@
                 android:layout_marginLeft="10dp"/>
         </LinearLayout>
     </LinearLayout>
+
+    <!--SeekBar的操作提示栏,默认不可见，按下SeekBar可见，抬起不可见-->
+    <RelativeLayout
+        android:id="@+id/bottom_seekBar_help"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_above="@+id/bottom_layout"
+        android:layout_marginBottom="10dp"
+        android:background="#80000000"
+        android:visibility="gone">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_centerInParent="true">
+            <TextView
+                android:id="@+id/seekBar_help_now"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:textColor="@color/colorAqua"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:text=" / "
+                android:textColor="@color/colorSliteGray"/>
+            <TextView
+                android:id="@+id/seekBar_help_num"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textColor="@color/colorSliteGray"/>
+        </LinearLayout>
+
+    </RelativeLayout>
     <!--底部栏-->
 <LinearLayout
     android:id="@+id/bottom_layout"
@@ -228,8 +266,7 @@
     android:orientation="vertical"
     android:layout_alignParentBottom="true"
     android:background="#80000000"
-    android:visibility="gone"
-    android:translationZ="99dp">
+    android:visibility="gone">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -369,8 +406,5 @@
                 android:text="@string/options"/>
         </LinearLayout>
     </LinearLayout>
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"></LinearLayout>
 </LinearLayout>
 </RelativeLayout>
