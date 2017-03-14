@@ -32,6 +32,7 @@ import android.widget.Button;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -145,11 +146,14 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 			LinearLayoutManager l = (LinearLayoutManager)recyclerView.getLayoutManager();
 			//l.findFirstCompletelyVisibleItemPosition();
 			//Log.i(TAG,"onScrolled: "+l.findFirstVisibleItemPosition());
-			adapterNowPos = l.findFirstVisibleItemPosition();
-			allItems = l.getItemCount();
-			String s = adapterNowPos+1+"/"+allItems;
-			comic_pic_state.setText(s);//设置图片的数量
-			pic_state_top.setText(s);
+			if((adapterNowPos-1)!=l.findFirstVisibleItemPosition()) {
+				//不等于的时候才是有效改变
+				adapterNowPos = l.findFirstVisibleItemPosition();
+				allItems = l.getItemCount();
+				//设置seekbar
+				seekBar.setMax(allItems);
+				seekBar.setProgress(adapterNowPos);
+			}
 		}
 	};
 	private static final String TAG = "WatchComicActivity";
@@ -166,14 +170,18 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 	private ArrayList<String> comic_Pics;
 	private Activity activity;
 	private LinearLayout toplayout;
+	private Button showCtrlbtn,backBtn,feedbackBtn,downLoadPicBtn,sharePicBtn;
 	private LinearLayout bottomlayout;
 	private TextView nextToogle,toogleBtn,preToogle;
 	private LinearLayout menu_content;
 	private TextView comic_name_bottom,comic_pic_state,time,battery;
+	private SeekBar seekBar;
 	private LinearLayout small_status;
 
 	private Button backbtn;
 	private TextView comic_name_top,pic_state_top;
+
+	private LinearLayout indexBtn,download_comic_Btn,light_btn,phone_switch,options_btn;
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
@@ -193,6 +201,18 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 		nextToogle = (TextView)findViewById(R.id.nextHUAText);
 		preToogle = (TextView)findViewById(R.id.preHUAText);
 		menu_content = (LinearLayout)findViewById(R.id.menu_content);
+		showCtrlbtn = (Button)findViewById(R.id.show_menuBtn);
+		backBtn = (Button)findViewById(R.id.back_btn);
+		feedbackBtn = (Button)findViewById(R.id.feed_backBtn);
+		downLoadPicBtn = (Button)findViewById(R.id.downloadpic_Btn);
+		sharePicBtn = (Button)findViewById(R.id.sharePicBtn);
+
+		menu_content.setOnClickListener(this);
+		showCtrlbtn.setOnClickListener(this);
+		backBtn.setOnClickListener(this);
+		feedbackBtn.setOnClickListener(this);
+		downLoadPicBtn.setOnClickListener(this);
+		sharePicBtn.setOnClickListener(this);
 
 		comic_name_bottom = (TextView)findViewById(R.id.comic_name_bottom);
 		comic_pic_state = (TextView)findViewById(R.id.comic_pic_state);
@@ -200,14 +220,33 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 		battery = (TextView)findViewById(R.id.battery);
 		time.setText(Utils.getTimeHour());
 		small_status = (LinearLayout)findViewById(R.id.small_status);
+		seekBar = (SeekBar)findViewById(R.id.bottom_seekBar);
+		seekBar.setOnSeekBarChangeListener(seekChangerListener);
 		//Log.i(TAG,"onCreate: "+Utils.getPhoneBatteryInfo(this,BatteryManager.BATTERY_PROPERTY_CURRENT_NOW,Utils.DATATYPE_INT));
 
 		toogleBtn.setOnClickListener(this);
 		nextToogle.setOnClickListener(this);
 		preToogle.setOnClickListener(this);
+		toogleBtn.setOnTouchListener(ctrl_touchlistenner);
+		nextToogle.setOnTouchListener(ctrl_touchlistenner);
+		preToogle.setOnTouchListener(ctrl_touchlistenner);
 
 		comic_name_top = (TextView)findViewById(R.id.comic_name);
 		pic_state_top = (TextView)findViewById(R.id.comic_pic_state_top);
+
+		//底边菜单
+		indexBtn = (LinearLayout)findViewById(R.id.indexBtn);
+		download_comic_Btn = (LinearLayout)findViewById(R.id.download_comic_Btn);
+		light_btn = (LinearLayout)findViewById(R.id.light_btn);
+		phone_switch = (LinearLayout)findViewById(R.id.phone_switch);
+		options_btn  = (LinearLayout)findViewById(R.id.options_btn);
+
+		indexBtn.setOnClickListener(this);
+		download_comic_Btn.setOnClickListener(this);
+		light_btn.setOnClickListener(this);
+		phone_switch.setOnClickListener(this);
+		indexBtn.setOnClickListener(this);
+		options_btn.setOnClickListener(this);
 
 		activity = this;
 		if(getIntent()!=null)
@@ -224,12 +263,74 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 		}
 	}
 
+
+	private float Sy = 0,Ey = 0;//放在外面是为了更新sy的值，让滑动更加顺滑
+	/**
+	 * 控制板的触摸事件监听，用来处理滑动冲突（控制面板与recyclerView的滑动冲突）
+	 */
+	View.OnTouchListener ctrl_touchlistenner = new View.OnTouchListener(){
+		@Override
+		public boolean onTouch(View v,MotionEvent event){
+			switch(event.getAction())
+			{
+				case MotionEvent.ACTION_DOWN:
+					Sy = event.getY();
+					//Log.i(TAG,"onTouch: 按下事件 "+Sy);
+				break;
+				case MotionEvent.ACTION_MOVE:
+					Ey = event.getY();
+					float res = (Ey-Sy);
+					if(Math.abs(res) > 10)
+					{
+						//Log.i(TAG,"onTouch: 分发事件给recyclerView 移动距离为 "+res);
+						//让RecyclerView开始滑动
+						mContentView.scrollBy(mContentView.getScrollX(),mContentView.getScrollY()-(int)res);
+						Sy = event.getY();//更新开始位置
+					}
+					break;
+				case MotionEvent.ACTION_UP:
+					Ey = event.getY();
+					//Log.i(TAG,"onTouch: 抬起事件 "+Ey);
+					break;
+			}
+			return false;
+		}
+	};
+
+	/**
+	 * seekBar值改变的监听
+	 */
+	SeekBar.OnSeekBarChangeListener seekChangerListener = new SeekBar.OnSeekBarChangeListener(){
+		@Override
+		public void onProgressChanged(SeekBar seekBar,int progress,boolean fromUser){
+			Log.i(TAG,"onProgressChanged: 选择了，第"+progress);
+			//设置图片状态（1/9）;
+			if(progress!=0) {
+				adapterNowPos = progress;
+				String s = adapterNowPos + "/" + allItems;
+				comic_pic_state.setText(s);//设置图片的数量
+				pic_state_top.setText(s);
+				scroolRV_To(adapterNowPos);
+			}
+		}
+
+		@Override
+		public void onStartTrackingTouch(SeekBar seekBar){
+
+		}
+
+		@Override
+		public void onStopTrackingTouch(SeekBar seekBar){
+
+		}
+	};
+
 	/**
 	 * 展示上下栏
 	 */
 	void showPanel()
 	{
-		Log.i(TAG,"hidePanel: 显示");
+		//Log.i(TAG,"hidePanel: 显示");
 		TranslateAnimation translateAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF,0.0f,Animation.RELATIVE_TO_SELF,0.0f,Animation.RELATIVE_TO_SELF,1.0f,Animation.RELATIVE_TO_SELF,0.0f);
 		TranslateAnimation translateAnimation1 = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
 				Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
@@ -242,6 +343,9 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 		bottomlayout.setVisibility(View.VISIBLE);//这里通过改变可见性来播放动画
 		//底部状态栏消失
 		small_status.setVisibility(View.GONE);
+		//隐藏上下操作板，注意只能是隐藏，不能GONE，否者会导致中间控制板占据所有屏幕的问题
+		nextToogle.setVisibility(View.INVISIBLE);
+		preToogle.setVisibility(View.INVISIBLE);
 	}
 
 	/**
@@ -249,7 +353,7 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 	 */
 	void hidePanel()
 	{
-		Log.i(TAG,"hidePanel: 隐藏");
+		//Log.i(TAG,"hidePanel: 隐藏");
 		TranslateAnimation translateAnimation = new TranslateAnimation(Animation.RELATIVE_TO_SELF,0.0f,
 				Animation.RELATIVE_TO_SELF,0.0f,Animation.RELATIVE_TO_SELF,0.0f,Animation.RELATIVE_TO_SELF,-1.0f);
 		TranslateAnimation translateAnimation1 = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
@@ -263,6 +367,9 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 		bottomlayout.setVisibility(View.INVISIBLE);//这里通过改变可见性来播放动画
 		//底部状态栏显示
 		small_status.setVisibility(View.VISIBLE);
+		//显示上下操作板
+		nextToogle.setVisibility(View.VISIBLE);
+		preToogle.setVisibility(View.VISIBLE);
 	}
 
 	/**
@@ -286,8 +393,27 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 	public void onClick(View v){
 		switch(v.getId())
 		{
+			case R.id.back_btn://返回按钮
+				onBackPressed();//调用返回
+				break;
+			case R.id.show_menuBtn://显示操作平台按钮
+				//Log.i(TAG,"onClick: 操作平台按钮");
+				if(View.GONE == menu_content.getVisibility()) {
+					menu_content.setVisibility(View.VISIBLE);
+					hidePanel();
+					mVisible = false;
+					//底部状态栏消失
+					small_status.setVisibility(View.GONE);
+				}
+				break;
+			case R.id.feed_backBtn://反馈按钮
+				break;
+			case R.id.downloadpic_Btn://下载此张图片按钮
+				break;
+			case R.id.sharePicBtn://分享漫画链接或者此张图片
+				break;
 			case R.id.toogle:
-				Log.i(TAG,"onClick: 隐藏按钮按下");
+				//Log.i(TAG,"onClick: 隐藏按钮按下");
 				toogle();
 				break;
 			case R.id.nextHUAText://下一张图片
@@ -297,6 +423,22 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 			case R.id.preHUAText://上一张图片
 				adapterNowPos--;
 				scroolRV_To(adapterNowPos);
+				break;
+			case R.id.menu_content://操作面板容器
+				menu_content.setVisibility(View.GONE);
+				//底部状态栏显示
+				small_status.setVisibility(View.GONE);
+				break;
+			case R.id.indexBtn://目录按钮
+				//目录界面
+				break;
+			case R.id.download_comic_Btn://下载漫画按钮
+				break;
+			case R.id.light_btn://亮度按钮
+				break;
+			case R.id.phone_switch://切换手机的横竖屏
+				break;
+			case R.id.options_btn://选项按钮
 				break;
 		}
 	}
@@ -308,12 +450,12 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 			adapterNowPos = allItems;
 			Toast.makeText(this,"已经到顶啦！",Toast.LENGTH_SHORT);
 		}
-		else if(adapterNowPos<=0)
+		else if(adapterNowPos<=1)
 		{
-			adapterNowPos = 0;
+			adapterNowPos = 1;
 			Toast.makeText(this,"已经到底啦！",Toast.LENGTH_SHORT);
 		}
-		mContentView.smoothScrollToPosition(pos);
+		mContentView.smoothScrollToPosition(adapterNowPos);
 	}
 
 	/**

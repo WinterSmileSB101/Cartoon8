@@ -28,6 +28,7 @@
             android:textColor="@color/colorSliteGray"
             android:gravity="center"
             android:layout_marginLeft="2dp"
+            android:maxLines="1"
             android:textSize="12sp"/>
         <TextView
             android:id="@+id/comic_pic_state"
@@ -36,6 +37,7 @@
             android:gravity="center"
             android:textColor="@color/colorSliteGray"
             android:layout_marginLeft="10dp"
+            android:maxLines="1"
             android:textSize="12sp"/>
         <TextView
             android:id="@+id/time"
@@ -44,6 +46,7 @@
             android:gravity="center"
             android:textColor="@color/colorSliteGray"
             android:layout_marginLeft="10dp"
+            android:maxLines="1"
             android:textSize="12sp"/>
         <TextView
             android:layout_width="wrap_content"
@@ -52,12 +55,14 @@
             android:textColor="@color/colorSliteGray"
             android:text="@string/battery"
             android:layout_marginLeft="10dp"
+            android:maxLines="1"
             android:textSize="12sp"/>
         <TextView
             android:id="@+id/battery"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
+            android:maxLines="1"
             android:textColor="@color/colorSliteGray"
             android:layout_marginRight="20dp"
             android:textSize="12sp"/>
@@ -65,6 +70,7 @@
 
     <!--菜单按钮区域(实际作用区域)-->
     <LinearLayout
+        android:id="@+id/menu_ctrl"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -97,7 +103,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:visibility="invisible">
+        android:visibility="gone">
         <!--上一话-->
         <TextView
             android:layout_width="match_parent"
@@ -143,7 +149,8 @@
         android:layout_height="50dp"
         android:orientation="horizontal"
         android:background="#80000000"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:translationZ="99dp">
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -185,28 +192,32 @@
                 android:layout_height="20dp"
                 android:background="@mipmap/info_72px"
                 android:layout_marginRight="10dp"
-                android:layout_gravity="center_vertical"/>
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"/>
             <Button
                 android:id="@+id/feed_backBtn"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:background="@mipmap/edit_71"
                 android:layout_marginRight="10dp"
-                android:layout_gravity="center_vertical"/>
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"/>
             <Button
                 android:id="@+id/downloadpic_Btn"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:background="@mipmap/download_46"
                 android:layout_marginRight="10dp"
-                android:layout_gravity="center_vertical"/>
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"/>
             <Button
                 android:id="@+id/sharePicBtn"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:background="@mipmap/external_link_75"
                 android:layout_marginRight="20dp"
-                android:layout_gravity="center_vertical"/>
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"/>
         </LinearLayout>
     </LinearLayout>
     <!--底部栏-->
@@ -217,14 +228,16 @@
     android:orientation="vertical"
     android:layout_alignParentBottom="true"
     android:background="#80000000"
-    android:visibility="gone">
+    android:visibility="gone"
+    android:translationZ="99dp">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:orientation="horizontal"
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp">
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="10dp">
         <TextView
             android:id="@+id/preHUA"
             android:layout_width="wrap_content"
@@ -238,7 +251,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:layout_gravity="center"/>
         <TextView
             android:id="@+id/nextHUA"
             android:layout_width="wrap_content"
@@ -251,8 +265,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"        android:layout_marginBottom="10dp"
         android:orientation="horizontal"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp">

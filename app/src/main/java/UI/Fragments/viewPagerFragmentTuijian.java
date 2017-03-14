@@ -72,7 +72,7 @@ public final class viewPagerFragmentTuijian extends Fragment{
 			switch(msg.what) {
 				case NetWorkUtils.MSG_HTML:
 					String html = msg.obj.toString();
-					Log.i(TAG,"handleMessage: 正确返回"+html);
+					//Log.i(TAG,"handleMessage: 正确返回"+html);
 					/*setPic(HtmlAnalysisUtils.getImageOfHtml(html,"img[src~=(?i)\\.(jpe?g)]"));
 					comicClass.setClass_name(HtmlAnalysisUtils.getPageClass(html,"ul li a[title~=]","title"));
 					comicClass.setClass_link(HtmlAnalysisUtils.getPageClass(html,"ul li a[title~=]","href"));*/
