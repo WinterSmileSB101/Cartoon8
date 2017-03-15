@@ -6,6 +6,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.os.AsyncTask;
 import android.os.BatteryManager;
@@ -38,6 +40,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.Target;
 
 import java.util.ArrayList;
 
@@ -117,8 +121,7 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 			@Override
 			protected Void doInBackground(String... params){
 				Log.i(TAG,"doInBackground: 后台操作获取图片");
-				comic = new Comic();
-				comic_Pics = HtmlAnalysisUtils.getComicPicsString(params[0],COMIC_PICS,5);//第5个位置是图片位置
+				comic_Pics = HtmlAnalysisUtils.getComicPicsString(params[0],COMIC_PICS,7);//第7个位置是图片位置
 				comic.setName(HtmlAnalysisUtils.getComicDetails(params[0],COMIC_PIC_DOM.get(2),HtmlAnalysisUtils.WHAT_innerHTML).get(0));
 				comic_hua = HtmlAnalysisUtils.getComicDetails(params[0],COMIC_PIC_DOM.get(1),HtmlAnalysisUtils.WHAT_innerHTML).get(0).replace(comic.getName(),"");//去掉多余的名称
 				return null;
@@ -151,7 +154,7 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 			allItems = l.getItemCount();
 			//设置seekbar
 			seekBar.setMax(allItems-1);
-			Log.i(TAG,"onScrolled: "+allItems);
+			//Log.i(TAG,"onScrolled: "+allItems);
 			seekBar.setProgress(adapterNowPos);
 			setpicText();//设置文字
 		}
@@ -260,6 +263,7 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 			Intent intent = getIntent();
 			comic = (Comic)intent.getSerializableExtra(COMIC_VALUE);
 			comic_link = intent.getStringExtra(COMIC_LINK);
+			Log.i(TAG,"onCreate: comic_link "+comic_link);
 			new Runnable(){
 				@Override
 				public void run(){
@@ -320,7 +324,7 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 			//关闭辅助面板
 			bottom_seekBar_help.setVisibility(View.GONE);
 			int progress = seekBar.getProgress();
-			Log.i(TAG,"onProgressChanged: 选择了，第"+progress);
+			//Log.i(TAG,"onProgressChanged: 选择了，第"+progress);
 			//设置图片状态（1/9）;
 			adapterNowPos = progress;
 			setpicText();
@@ -403,6 +407,7 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 
 	@Override
 	public void onClick(View v){
+		Intent intent = null;
 		switch(v.getId())
 		{
 			case R.id.back_btn://返回按钮
@@ -421,6 +426,8 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 			case R.id.feed_backBtn://反馈按钮
 				break;
 			case R.id.downloadpic_Btn://下载此张图片按钮
+				//获取图片连接
+				NetWork.NetWorkUtils.dowload_Pic(comic_Pics.get(adapterNowPos),this);
 				break;
 			case R.id.sharePicBtn://分享漫画链接或者此张图片
 				break;
@@ -443,8 +450,17 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 				break;
 			case R.id.indexBtn://目录按钮
 				//目录界面
+				intent = new Intent(this,index_download_Acritity.class);
+				intent.putExtra(index_download_Acritity.ISDOWNLOAD_KEY,false);
+				intent.putExtra(index_download_Acritity.COMIC_KEY,comic);
+				this.startActivity(intent);
 				break;
 			case R.id.download_comic_Btn://下载漫画按钮
+				//打开漫画下载界面
+				intent = new Intent(this,index_download_Acritity.class);
+				intent.putExtra(index_download_Acritity.ISDOWNLOAD_KEY,true);
+				intent.putExtra(index_download_Acritity.COMIC_KEY,comic);
+				this.startActivity(intent);
 				break;
 			case R.id.light_btn://亮度按钮
 				break;
@@ -464,12 +480,12 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 		if(adapterNowPos>=allItems)
 		{
 			adapterNowPos = allItems;
-			Toast.makeText(this,"已经到顶啦！",Toast.LENGTH_SHORT);
+			Toast.makeText(this,"已经到顶啦！",Toast.LENGTH_SHORT).show();
 		}
 		else if(adapterNowPos <= 0)
 		{
 			adapterNowPos = 0;
-			Toast.makeText(this,"已经到底啦！",Toast.LENGTH_SHORT);
+			Toast.makeText(this,"已经到底啦！",Toast.LENGTH_SHORT).show();
 		}
 		mContentView.smoothScrollToPosition(adapterNowPos);
 	}
@@ -499,8 +515,13 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 		public void onBindViewHolder(RecyclerView.ViewHolder holder,int position){
 			MyViewHolder myViewHolder = (MyViewHolder)holder;
 			myViewHolder.textView.setText(position+1+"");//设置占位
+			int width = (int)Utils.getScreenParam(activity,0);
+			int height = (int)Utils.getScreenParam(activity,1);
 			Glide.with(context)
 					.load(pics.get(position))
+					//.diskCacheStrategy(DiskCacheStrategy.SOURCE)//缓存以便下载图片
+					.asBitmap()
+					.override(width,height)
 					.into(myViewHolder.imageView);
 		}
 
@@ -521,6 +542,10 @@ public final class WatchComicActivity extends AppCompatActivity implements View.
 			}
 		}
 	}
+
+	/**
+	 * 获取电量
+	 */
 	public BroadcastReceiver batterReceiver  = new BroadcastReceiver(){
 		@Override
 		public void onReceive(Context context,Intent intent){

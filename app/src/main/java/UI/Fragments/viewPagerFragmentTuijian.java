@@ -155,7 +155,8 @@ public final class viewPagerFragmentTuijian extends Fragment{
 
 	void InitValue()
 	{
-		NetWorkUtils.getHtmlPage(this.getActivity(),"http://m.dangniao.com/",handler);
+		NetWorkUtils netWorkUtils = new NetWorkUtils();
+		netWorkUtils.getHtmlPage(this.getActivity(),"http://m.dangniao.com/",handler);
 	}
 
 	void DaynamicInitRecyclerView(View view,ComicRankList comicRank)

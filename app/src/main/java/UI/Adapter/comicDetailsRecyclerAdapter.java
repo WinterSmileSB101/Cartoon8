@@ -1,5 +1,6 @@
 package UI.Adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -14,13 +15,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
+import ComicData.Comic;
+import ComicData.ComicChapter;
 import ComicData.comicStaticValue;
 import RetailsWorm.HtmlAnalysisUtils;
 import RetailsWorm.NetWorkUtils;
 import winter.zxb.smilesb101.cartoon8.R;
 import winter.zxb.smilesb101.cartoon8.WatchComicActivity;
+
+import static ComicData.comicStaticValue.ComicDetails_patternNames;
 
 
 /**
@@ -33,24 +39,45 @@ import winter.zxb.smilesb101.cartoon8.WatchComicActivity;
  * 修改备注：
  */
 
-public final class comicDetailsRecyclerAdapter extends RecyclerView.Adapter{
+public final class comicDetailsRecyclerAdapter extends RecyclerView.Adapter implements Serializable{
 	private static final String TAG = "DetailsRecyclerAdapter";
 
-	private Context context;
-	private ArrayList<String> comic_chapters;
-	private ArrayList<String> comic_chapterLinks;
+	private ArrayList<ComicChapter> chapters;
+	private Comic comic;
 	private String comic_ChapterImage;
 	private View rootView;
 	private static MyViewHolder lastHolder = null;
+	private Activity activity;
 
-	public comicDetailsRecyclerAdapter(ArrayList<String> comic_chapters,ArrayList<String> comic_chapterLinks){
-		this.comic_chapters = comic_chapters;
-		this.comic_chapterLinks = comic_chapterLinks;
+	/**
+	 * 下载的holder集合
+	 */
+	private ArrayList<MyViewHolder> holders;
+	/**
+	 * 下载的链接集合
+	 */
+	private ArrayList<String> downlaoad_selectPoss;
+
+	/**
+	 * 是否是下载的adapter
+	 */
+	private boolean isDownLoad = false;
+	private Context context;
+
+	public comicDetailsRecyclerAdapter(Comic comic,boolean isDownLoad,Activity activity){
+		this.comic = comic;
+		this.isDownLoad = isDownLoad;
+		downlaoad_selectPoss = new ArrayList<>();
+		holders = new ArrayList<>();
+		chapters = comic.getChapters();
+		this.activity = activity;
+		//Log.i(TAG,"comicDetailsRecyclerAdapter: 获取图片列表前前");
+		//Log.i(TAG,"comicDetailsRecyclerAdapter: "+chapters.size());
 	}
 
 	@Override
 	public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent,int viewType){
-		this.context = parent.getContext();
+		context = parent.getContext();
 		rootView = LayoutInflater.from(parent.getContext())
 				.inflate(R.layout.comicdetails_recycler_item,parent,false);
 		return new MyViewHolder(rootView);
@@ -58,32 +85,54 @@ public final class comicDetailsRecyclerAdapter extends RecyclerView.Adapter{
 
 	@Override
 	public void onBindViewHolder(RecyclerView.ViewHolder holder,final int position){
+		holders.add((MyViewHolder)holder);//添加到所有holder集合中
 		final MyViewHolder NowHolder = (MyViewHolder)holder;//必须使用final否者会改变赋值（导致图片逻辑在adapter的最后一个的问题）
-		String s = comic_chapters.get(position);
+		String s = chapters.get(position).getChapterName();
 		NowHolder.chapterName.setText(s);
-		//NetWorkUtils.getHtmlPage(context,comic_chapterLinks.get(position),handler);
+		/*if(comic.getChapters().get(position).getPicList().equals(new ArrayList<String>())) {//不存在就通过网络访问
+			NetWorkUtils.getHtmlPage(activity,comic.getChapters().get(position).getChapterLink(),handler);
+		}*/
 		NowHolder.chapterName.setOnClickListener(new View.OnClickListener(){
 			@Override
 			public void onClick(View v){
-				//按下，打开看漫画界面（漫画活动）
 				int pos = NowHolder.getAdapterPosition();
-				if(lastHolder!=null)
-				{
-					//设置成默认图片
-					lastHolder.chapterName.setBackgroundResource(R.drawable.comic_btn);
+				if(!isDownLoad) {
+					//按下，打开看漫画界面（漫画活动）
+					if(lastHolder != null) {
+						//设置成默认图片
+						lastHolder.chapterName.setBackgroundResource(R.drawable.comic_btn);
+					}
+					NowHolder.chapterName.setBackgroundResource(R.drawable.round_rect_click);
+					lastHolder = NowHolder;//赋值上次点击的holder
+					Intent intent = new Intent(activity,WatchComicActivity.class);
+					intent.putExtra(WatchComicActivity.COMIC_VALUE,comic);
+					Log.i(TAG,"onClick: 漫画链接 "+chapters.get(pos).getChapterLink());
+					intent.putExtra(WatchComicActivity.COMIC_LINK,chapters.get(pos).getChapterLink());
+					activity.startActivity(intent);
 				}
-				NowHolder.chapterName.setBackgroundResource(R.drawable.round_rect_click);
-				lastHolder = NowHolder;//赋值上次点击的holder
-				Intent intent = new Intent(context,WatchComicActivity.class);
-				intent.putExtra(WatchComicActivity.COMIC_LINK,comic_chapterLinks.get(pos));
-				context.startActivity(intent);
+			   else {
+					String link = chapters.get(pos).getChapterLink();
+					//多选下载的adapter
+					if(downlaoad_selectPoss.contains(link))
+					{
+						//已经存在，则取消选择
+						NowHolder.chapterName.setBackgroundResource(R.drawable.comic_btn);
+						downlaoad_selectPoss.remove(link);
+					}
+					else
+					{
+						//不存在添加
+						NowHolder.chapterName.setBackgroundResource(R.drawable.round_rect_click);
+						downlaoad_selectPoss.add(link);
+					}
+				}
 			}
 		});
 	}
 
 	@Override
 	public int getItemCount(){
-		return comic_chapters.size();
+		return chapters.size();
 	}
 
 	class MyViewHolder extends RecyclerView.ViewHolder{
@@ -131,11 +180,38 @@ public final class comicDetailsRecyclerAdapter extends RecyclerView.Adapter{
 				//comic_ChapterImage = HtmlAnalysisUtils.getComicDetails(params[0],comicStaticValue.ComicContent_COMICPIC,"src").get(0);
 				return null;
 			}
-
 			@Override
 			protected void onPostExecute(Void aVoid){
 				super.onPostExecute(aVoid);
 			}
 		}.execute(html);
+	}
+
+	/**
+	 * 全选
+	 * @return 下载的链接集合
+	 */
+	public ArrayList<String> choseAllitem()
+	{
+		if(isDownLoad)
+		{
+			downlaoad_selectPoss = new ArrayList<>();
+			int index = 0;
+			for(MyViewHolder holder : holders)
+			{
+				holder.chapterName.setBackgroundResource(R.drawable.round_rect_click);
+				downlaoad_selectPoss.add(chapters.get(index).getChapterLink());
+				index++;
+			}
+		}
+		return downlaoad_selectPoss;
+	}
+
+	/**
+	 * 获取下载链接集合
+	 * @return
+	 */
+	public ArrayList<String> getDownlaoad_selectPoss(){
+		return downlaoad_selectPoss;
 	}
 }

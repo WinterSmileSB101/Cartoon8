@@ -206,19 +206,18 @@ public class HtmlAnalysisUtils{
 	{
 		ArrayList<String> arrList = new ArrayList<>();
 		try {
+			Log.i(TAG,"getComicPicsString: "+html);
 			Document doc = Jsoup.parse(html);
 			Elements eles = doc.select(pattern);
 
 			String s = eles.get(pos).toString();
-			//Log.i(TAG,"getComicPicsString: "+s);
 			s = s.substring(s.indexOf("[\"")+2,s.indexOf("\"]"));//获取到图片串集合
 			String[] lists = s.split(",");
 			for(String list : lists)
 			{
-				//Log.i(TAG,"getComicPicsString: "+list);
 				s = list.replace("\"","");//要去掉的"
 				s = s.replace("\\","");//去掉\
-				//Log.i(TAG,"getComicPicsString: "+s);
+				Log.i(TAG,"getComicPicsString: "+s);
 				arrList.add(s);
 			}
 			return arrList;

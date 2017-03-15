@@ -1,5 +1,6 @@
 package winter.zxb.smilesb101.cartoon8;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -28,6 +29,7 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 
 import ComicData.Comic;
+import ComicData.ComicChapter;
 import RetailsWorm.HtmlAnalysisUtils;
 import RetailsWorm.NetWorkUtils;
 import UI.Adapter.comicDetailsRecyclerAdapter;
@@ -53,7 +55,7 @@ public final class comicDetailsActivity extends AppCompatActivity implements Vie
 	private String name;
 	private String lastestHua;
 
-	private Context context;
+	private Activity context;
 
 	private ImageView comic_Image;
 	private ImageView toolBar_BG;
@@ -64,6 +66,7 @@ public final class comicDetailsActivity extends AppCompatActivity implements Vie
 	private previewRecyclerAdapter previewAdapter;
 	private comicDetailsRecyclerAdapter AllListadapter;
 	private comicDetailsRecyclerAdapter PartListadapter;
+	private comicDetailsRecyclerAdapter DownLoadListadapter;
 	private TextView comic_status;
 	private TextView comic_UpdateTime;
 	private TextView comic_athuor;
@@ -82,6 +85,9 @@ public final class comicDetailsActivity extends AppCompatActivity implements Vie
 	private boolean isFirstLayout;
 
 	private Comic comic;
+
+	private ArrayList<String> chapterLink,chapterHua;
+	private ArrayList<ComicChapter> chapterList;
 
 
 	Handler handler = new Handler(){
@@ -225,8 +231,14 @@ public final class comicDetailsActivity extends AppCompatActivity implements Vie
 					s = "\n"+s;
 				}
 				comic.setComic_introduce(HtmlAnalysisUtils.getComicDetails(params[0],ComicDetails_patternNames.get(2),HtmlAnalysisUtils.WHAT_innerHTML).get(1)+s);
-				comic.setComic_Chapter_Images(HtmlAnalysisUtils.getComicDetails(params[0],ComicDetails_patternNames.get(3),"href"));
-				comic.setComic_Chapter_titles(HtmlAnalysisUtils.getComicDetails(params[0],ComicDetails_patternNames.get(3),"title"));
+				//获取漫画的每话的名称以及链接
+				chapterLink = HtmlAnalysisUtils.getComicDetails(params[0],ComicDetails_patternNames.get(3),"href");
+				chapterHua = HtmlAnalysisUtils.getComicDetails(params[0],ComicDetails_patternNames.get(3),"title");
+				chapterList = new ArrayList<ComicChapter>();
+				for(int i = 0,length = chapterLink.size();i<length;i++) {
+					chapterList.add(new ComicChapter(chapterLink.get(i),chapterHua.get(i),new ArrayList<String>()));
+				}
+				comic.setChapters(chapterList);
 				comic.setUpdateRound(HtmlAnalysisUtils.getComicDetails(params[0],ComicDetails_patternNames.get(4),HtmlAnalysisUtils.WHAT_innerHTML).get(0));
 
 				prviews = new ArrayList<Prview>();
@@ -265,19 +277,26 @@ public final class comicDetailsActivity extends AppCompatActivity implements Vie
 				{
 					comic_UpdateRound.setText("[更新周期：暂无 ]");
 				}
-				ArrayList<String> titles = comic.getComic_Chapter_titles();
-				ArrayList<String> images = comic.getComic_Chapter_Images();
-				AllListadapter = new comicDetailsRecyclerAdapter(titles,images);
+				ArrayList<String> titles = chapterHua;
+				ArrayList<String> links = chapterLink;
+				AllListadapter = new comicDetailsRecyclerAdapter(comic,false,context);
 
-				ArrayList<String> titles1 = new ArrayList<String>();
-				ArrayList<String> images1 = new ArrayList<String>();
-
+				//设置部分显示的comic
+				Comic comic1 = new Comic();
+				comic1.setLastestChapter(comic.getLastestChapter());
+				comic1.setLastUpdateTime(comic.getLastUpdateTime());
+				comic1.setComic_athour(comic.getComic_athour());
+				comic1.setComic_class(comic.getComic_class());
+				comic1.setComic_Status(comic.getComic_Status());
+				comic1.setComic_introduce(comic.getComic_introduce());
+				comic1.setUpdateRound(comic.getUpdateRound());
+				ArrayList<ComicChapter> chapters = new ArrayList<ComicChapter>();
 				for(int i = 0,lenth = 12;i<lenth;i++)
 				{
-					titles1.add(titles.get(i));
-					images1.add(images.get(i));
+					chapters.add(new ComicChapter(links.get(i),titles.get(i),new ArrayList<String>()));
 				}
-				PartListadapter = new comicDetailsRecyclerAdapter(titles1,images1);
+				comic1.setChapters(chapters);
+				PartListadapter = new comicDetailsRecyclerAdapter(comic1,false,context);
 				CustomStraggerLayoutManager layoutManager = new CustomStraggerLayoutManager(4,StaggeredGridLayoutManager.VERTICAL);
 				recyclerView.setLayoutManager(layoutManager);
 				recyclerView.setNestedScrollingEnabled(false);
@@ -417,7 +436,11 @@ public final class comicDetailsActivity extends AppCompatActivity implements Vie
 		recyclerView = (RecyclerView)findViewById(R.id.download_recyclerView);
 		CustomStraggerLayoutManager layoutManager = new CustomStraggerLayoutManager(4,StaggeredGridLayoutManager.VERTICAL);
 		recyclerView.setLayoutManager(layoutManager);
-		recyclerView.setAdapter(AllListadapter);
+		if(DownLoadListadapter==null)
+		{
+			DownLoadListadapter = new comicDetailsRecyclerAdapter(comic,true,context);
+		}
+		recyclerView.setAdapter(DownLoadListadapter);
 
 		findViewById(R.id.download_allChose).setOnClickListener(this);
 		findViewById(R.id.download_downloadBtn).setOnClickListener(this);

@@ -65,36 +65,17 @@ public final class Comic implements Serializable{
 	 */
 	private String comic_image;
 	/**
-	 * 漫画章节图片链接
-	 */
-	private ArrayList<String> comic_Chapter_Images;
-	/**
-	 * 漫画章节名称
-	 */
-	private ArrayList<String> comic_Chapter_titles;
-	/**
 	 * 漫画更新状态（连载或者完结）
 	 */
 	private String comic_Status;
+	/**
+	 * 漫画的章节列表
+	 */
+	private ArrayList<ComicChapter> chapters;
 
 	public Comic(){
 	}
 
-	public Comic(String name,int comic_num,String comic_introduce,float comic_mark,int comic_popularity,String lastUpdateTime,String startUpdateTime,String lastestChapter,String comic_athour,String comic_class,String comic_image,ArrayList<String> comic_Chapter_Images,ArrayList<String> comic_Chapter_titles){
-		Name = name;
-		this.comic_num = comic_num;
-		this.comic_introduce = comic_introduce;
-		this.comic_mark = comic_mark;
-		this.comic_popularity = comic_popularity;
-		this.lastUpdateTime = lastUpdateTime;
-		this.startUpdateTime = startUpdateTime;
-		this.lastestChapter = lastestChapter;
-		this.comic_athour = comic_athour;
-		this.comic_class = comic_class;
-		this.comic_image = comic_image;
-		this.comic_Chapter_Images = comic_Chapter_Images;
-		this.comic_Chapter_titles = comic_Chapter_titles;
-	}
 
 	public String getName(){
 		return Name;
@@ -176,22 +157,6 @@ public final class Comic implements Serializable{
 		this.comic_image = comic_image;
 	}
 
-	public ArrayList<String> getComic_Chapter_Images(){
-		return comic_Chapter_Images;
-	}
-
-	public void setComic_Chapter_Images(ArrayList<String> comic_Chapter_Images){
-		this.comic_Chapter_Images = comic_Chapter_Images;
-	}
-
-	public ArrayList<String> getComic_Chapter_titles(){
-		return comic_Chapter_titles;
-	}
-
-	public void setComic_Chapter_titles(ArrayList<String> comic_Chapter_titles){
-		this.comic_Chapter_titles = comic_Chapter_titles;
-	}
-
 	public String getLastestChapter(){
 		return lastestChapter;
 	}
@@ -214,5 +179,13 @@ public final class Comic implements Serializable{
 
 	public void setUpdateRound(String updateRound){
 		this.updateRound = updateRound;
+	}
+
+	public ArrayList<ComicChapter> getChapters(){
+		return chapters;
+	}
+
+	public void setChapters(ArrayList<ComicChapter> chapters){
+		this.chapters = chapters;
 	}
 }

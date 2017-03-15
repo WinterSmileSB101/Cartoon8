@@ -2,6 +2,7 @@ package Utils;
 
 import android.app.Activity;
 import android.os.BatteryManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import java.sql.Time;
@@ -70,5 +71,34 @@ public final class Utils{
 		}
 		sb.append(minute);
 		return sb.toString();
+	}
+
+	/**
+	 * 获取屏幕相关信息
+	 * @param activity 活动
+	 * @param which 哪种信息
+	 *            0  屏幕宽度（像素）
+	 *            1  屏幕高度（像素）
+	 *            2  屏幕密度（0.75 / 1.0 / 1.5）
+	 *            3  屏幕密度DPI（120 / 160 / 240）
+	 * @return
+	 */
+	public static float getScreenParam(Activity activity,int which)
+	{
+		DisplayMetrics metric = new DisplayMetrics();
+		activity.getWindowManager().getDefaultDisplay().getMetrics(metric);
+		switch(which)
+		{
+			case 0:// 屏幕宽度（像素）
+				return metric.widthPixels;
+			case 1:// 屏幕高度（像素）
+				return metric.heightPixels;
+			case 2:// 屏幕密度（0.75 / 1.0 / 1.5）
+				return metric.density;
+			case 3:// 屏幕密度DPI（120 / 160 / 240）
+				return metric.densityDpi;
+			default:
+				return metric.widthPixels;
+		}
 	}
 }
